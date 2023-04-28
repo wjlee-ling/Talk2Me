@@ -22,12 +22,6 @@ def input_prmpt(messages: typing.List[dict]) -> str:
         model=engine,
         messages=messages,
     )
-    print(completion.choices)
-    print("==================")
-    print(completion.choices[0])
-    print("================")
-    print(completion.choices[0].message)
-    print("================")
     return completion.choices[0].message.content
 
 
