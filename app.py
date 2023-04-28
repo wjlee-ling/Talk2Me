@@ -53,9 +53,13 @@ def chat():
         prompt = st.text_input(label="You: ", key=turns)
         st.write(f"You: {prompt}")
         time.sleep(0.58)
-    if prompt == "quit":
+
+        # if st.button(label="End Conversation", on_click=True, key=turns*12345):
+        #     break
+
+    if prompt != "":
         correction = correct(messages)
-        st.write(f"Here is my advice for you:\n{correction}")
+        st.write(f"Bot: Here is my advice for you.\n{correction}")
 
 
 def correct(messages):
