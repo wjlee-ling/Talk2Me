@@ -6,17 +6,16 @@ import streamlit as st
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 engine = st.secrets.GPT_MODEL
-messages: typing.List[dict] = [
-    {
-        "role": "system",
-        "content": "Let's play role-play. Remember that I'm a Korean learning English and you are a fluent English speaker. Let's say you work at a coffee shop and I am a client.",
-    },
-    {"role": "user", "content": "Hi"},
-]
 
-st.title("Learn English")
+st.title("Talk 2 Me")
 
+st.header("Let's get to know.")
 
+st.subheader("Language")
+lang = st.selectbox(
+    "Choose a language to learn",
+    options=["English", "Korean", "German"]
+)
 def input_prmpt(messages: typing.List[dict]) -> str:
     completion = openai.ChatCompletion.create(
         model=engine,
@@ -27,6 +26,14 @@ def input_prmpt(messages: typing.List[dict]) -> str:
 
 # Define a function to prompt the user for input and generate a response
 def chat():
+    messages: typing.List[dict] = [
+        {
+            "role": "system",
+            "content": "Let's play role-play. Remember that I'm a Korean learning English and you are a fluent English speaker. Let's say you work at a coffee shop and I am a client.",
+        },
+        {"role": "user", "content": "Hi"},
+    ]
+
     turns = 0
     prompt = st.text_input(label="You: ", key=turns)
     st.write(f"You: {prompt}")
