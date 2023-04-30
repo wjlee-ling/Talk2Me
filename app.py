@@ -23,6 +23,7 @@ proficiency = st.radio(
     options=["Beginner", "Intermediate", "Advanced"],
 )
 
+
 def input_prmpt(messages: typing.List[dict]) -> str:
     completion = openai.ChatCompletion.create(
         model=engine,
@@ -36,7 +37,8 @@ def chat():
     messages: typing.List[dict] = [
         {
             "role": "system",
-            "content": "Let's play role-play. Remember that I'm a Korean learning English and you are a fluent English speaker. Let's say you work at a coffee shop and I am a client.",
+            "content": f"Let's play role-play. Remember that I'm a Korean learning {language} and you are a fluent {language} speaker.\
+            My proficieny of {language} is {proficiency}. Let's say you work at a coffee shop and I am a client.",
         },
         {"role": "user", "content": "Hi"},
     ]
