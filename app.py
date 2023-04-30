@@ -12,10 +12,17 @@ st.title("Talk 2 Me")
 st.header("Let's get to know.")
 
 st.subheader("Language")
-lang = st.selectbox(
+language = st.radio(
     "Choose a language to learn",
-    options=["English", "Korean", "German"]
+    options=["English", "Korean", "German"],
 )
+
+st.subheader("Proficiency")
+proficiency = st.radio(
+    f"Your {language} proficiency level",
+    options=["Beginner", "Intermediate", "Advanced"],
+)
+
 def input_prmpt(messages: typing.List[dict]) -> str:
     completion = openai.ChatCompletion.create(
         model=engine,
