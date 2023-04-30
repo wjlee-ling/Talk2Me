@@ -1,3 +1,5 @@
-/.streamlit
 .env
 .python-version
+
+# secrets
+/.streamlit/secrets.toml
