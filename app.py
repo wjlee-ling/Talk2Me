@@ -9,20 +9,19 @@ engine = st.secrets.GPT_MODEL
 
 st.title("Talk 2 Me")
 
-st.header("Let's get to know.")
-
-st.subheader("Language")
-language = st.radio(
+st.sidebar.header("Tell me about yourself")
+st.sidebar.subheader("Language")
+language = st.sidebar.radio(
     "Choose a language to learn",
     options=["English", "Korean", "German"],
 )
 
-st.subheader("Proficiency")
-proficiency = st.radio(
+st.sidebar.subheader("Proficiency")
+proficiency = st.sidebar.radio(
     f"Your {language} proficiency level",
     options=["Beginner", "Intermediate", "Advanced"],
 )
-
+st.write(f"the default is {language} w/ {proficiency}")
 
 def input_prmpt(messages: typing.List[dict]) -> str:
     completion = openai.ChatCompletion.create(
