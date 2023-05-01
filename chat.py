@@ -20,6 +20,7 @@ def chat():
                 "content": st.session_state.utterance,
             }
         )
+        st.session_state.utterance = ""
         get_response(messages)
         build_dialogue()
 
