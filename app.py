@@ -23,8 +23,14 @@ proficiency = st.sidebar.radio(
     key="proficiency",
     options=["Beginner", "Intermediate", "Advanced"],
 )
-st.write(f"We're talking in {st.session_state.language} at the level of {st.session_state.proficiency}.")
-if "logfile" not in st.session_state:  # ❗️TO-DO: file name w/ user unique ID
+st.write(
+    f"We're talking in {st.session_state.language} at the level of {st.session_state.proficiency}."
+)
+if (
+    "language" in st.session_state
+    and "proficiency" in st.session_state
+    and "logfile" not in st.session_state
+):  # ❗️TO-DO: file name w/ user unique ID
     st.session_state.logfile = "history.pickle"
     with open(st.session_state.logfile, "wb") as f:
         setting_prompt: typing.List[dict] = [
@@ -39,3 +45,4 @@ if "dialogue" not in st.session_state:
     st.session_state.dialogue = ""
 st.write(st.session_state.dialogue)
 st.text_input(r"👇", key="utterance", on_change=chat)
+st.button("Quit", key="end_conversation", on_click=chat)

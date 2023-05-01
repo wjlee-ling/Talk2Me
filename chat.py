@@ -7,6 +7,23 @@ engine = st.secrets.GPT_MODEL
 # Define a function to prompt the user for input and generate a response
 
 
+def chat():
+    with open(st.session_state.logfile, "rb") as f:
+        messages = pickle.load(f)
+
+    if st.session_state.end_conversation:
+        get_feedback()
+    else:
+        messages.append(
+            {
+                "role": "user",
+                "content": st.session_state.utterance,
+            }
+        )
+        get_response(messages)
+        build_dialogue()
+
+
 def get_response(messages):
     completion = openai.ChatCompletion.create(
         model=engine,
@@ -19,37 +36,24 @@ def get_response(messages):
     }
     messages.append(newitem)
 
-    with open("history.pickle", "wb") as f:
+    with open(st.session_state.logfile, "wb") as f:
         pickle.dump(messages, f)
 
 
-def chat():
-    with open("history.pickle", "rb") as f:
+def get_feedback():
+    with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
-
-    messages.append(
-        {
-            "role": "user",
-            "content": st.session_state.utterance,
-        }
-    )
-    get_response(messages)
-    build_dialogue()
-
-
-def correct(messages: typing.List[dict]):
-    correction_request = {
+    feedback_request = {
         "role": "assistant",
-        "content": "Could you give me feedback about my English in Korean?",
+        "content": f"Could you give me feedback about my {st.session_state.language} in Korean considering my {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct me in details if i was wrong.",
     }
-    messages.append(correction_request)
-    response = get_response(messages)
-    return response
+    messages.append(feedback_request)
+    get_response(messages)
 
 
 def build_dialogue():
     dialogue = []
-    with open("history.pickle", "rb") as f:
+    with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
 
     for turn in messages:
@@ -58,7 +62,7 @@ def build_dialogue():
             # do not display initial prompt setting
             continue
         elif role == "assistant":  # different bot names for different situations
-            role = "bot"
+            role = "bot "
         dialogue.append(f"{role}: {content}")
 
     st.session_state.dialogue = "\n\n".join(dialogue)
