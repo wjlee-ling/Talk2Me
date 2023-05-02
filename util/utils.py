@@ -1,6 +1,12 @@
 import pickle
+from pathlib import Path
 
 def load_history(filename):
+    p = Path(filename)
+    if not p.exists():
+        p.mkdir(parents=True)
+        return []
+
     with open(filename, "rb") as f:
         history = pickle.load(f)
 

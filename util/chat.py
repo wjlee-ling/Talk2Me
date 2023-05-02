@@ -3,6 +3,8 @@ import pickle
 import openai
 import streamlit as st
 
+from util.utils import *
+
 engine = st.secrets.GPT_MODEL
 
 
@@ -46,7 +48,7 @@ def get_feedback():
         messages = pickle.load(f)
     feedback_request = {
         "role": "assistant",
-        "content": f"Given the past dialogue, could you give me feedback in Korean about the user's {st.session_state.language} considering my {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct me in details if i was wrong.",
+        "content": f"Given the past dialogue, could you give feedback in Korean about the user's (not assistant's) {st.session_state.language} considering his {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct user's mistake in details if there is any.",
     }
     messages.append(feedback_request)
     get_response(messages)
@@ -57,7 +59,7 @@ def show_dialogue():
     with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
 
-    for turn in messages:
+    for turn in messages[1:]:
         role, content = turn["role"], turn["content"]
         if role == "system":
             # do not display initial prompt setting

@@ -2,6 +2,7 @@ import typing
 import pickle
 import openai
 import streamlit as st
+from util.utils import *
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 
@@ -37,10 +38,27 @@ with st.form("setting"):
     submitted = st.form_submit_button("Let's talk!")
 
 if submitted:
+    # setting_prompt: typing.List[dict] = [
+    #             {
+    #                 "role": "system",
+    #                 "content": f"Let's play role-play. Remember that I'm a Korean learning {st.session_state.language} and you are a fluent {st.session_state.language} speaker.\
+    #                 My proficieny of {st.session_state.language} is {st.session_state.proficiency}. Let's say you work at {st.session_state.situation} and I am a client.",
+    #             },
+    #         ]
+
+    # log = load_history("log.pickle")
+    # log.append({
+    #     "language": st.session_state.language,
+    #     "situation": st.session_state.situation,
+    #     "proficiency": st.session_state.proficiency,
+    # })
+    # log.append(setting_prompt)
+    # save_history("log.pickle", log)
+
     if (
         "logfile" not in st.session_state
     ):  # ❗️TO-DO: file name w/ user unique ID
-        st.session_state.logfile = "pages.pickle"
+        st.session_state.logfile = "log.pickle"
         with open(st.session_state.logfile, "wb") as f:
             setting_prompt: typing.List[dict] = [
                 {
@@ -55,6 +73,7 @@ if submitted:
                 },
             ]
             pickle.dump(setting_prompt, f)
+        
     switch_page("interface")
 
 # if "dialogue" not in st.session_state:
