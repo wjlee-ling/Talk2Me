@@ -24,7 +24,13 @@ with st.form("setting"):
     situation = st.radio(
         "Whare are you now?",
         key="situation",
-        options=["Starbucks", "AMC(movie theater)", "McDonald's", "Subway(restaurant)", "Zara"]
+        options=[
+            "Starbucks",
+            "AMC(movie theater)",
+            "McDonald's",
+            "Subway(restaurant)",
+            "Zara",
+        ],
     )
     st.subheader("Proficiency")
     proficiency = st.radio(
@@ -55,9 +61,7 @@ if submitted:
     # log.append(setting_prompt)
     # save_history("log.pickle", log)
 
-    if (
-        "logfile" not in st.session_state
-    ):  # ❗️TO-DO: file name w/ user unique ID
+    if "logfile" not in st.session_state:  # ❗️TO-DO: file name w/ user unique ID
         st.session_state.logfile = "log.pickle"
         with open(st.session_state.logfile, "wb") as f:
             setting_prompt: typing.List[dict] = [
@@ -73,7 +77,7 @@ if submitted:
                 },
             ]
             pickle.dump(setting_prompt, f)
-        
+
     switch_page("interface")
 
 # if "dialogue" not in st.session_state:

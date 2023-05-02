@@ -1,6 +1,7 @@
 import pickle
 from pathlib import Path
 
+
 def load_history(filename):
     p = Path(filename)
     if not p.exists():
@@ -16,6 +17,7 @@ def load_history(filename):
 def save_history(filename, history):
     with open(filename, "wb") as f:
         pickle.dump(history, f)
+
 
 # def get_new_queries():
 #     import datetime
