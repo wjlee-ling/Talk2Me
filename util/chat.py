@@ -5,6 +5,7 @@ import streamlit as st
 
 engine = st.secrets.GPT_MODEL
 
+
 def chat():
     with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
@@ -75,4 +76,3 @@ def show_feedback():
         messages = pickle.load(f)
 
     st.session_state.feedback = messages[-1]["content"]
- 

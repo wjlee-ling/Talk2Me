@@ -1,5 +1,6 @@
 import streamlit as st
-from chat import chat
+from util.chat import chat
+
 st.write(
     f"We're in {st.session_state['situation']}. Let's talk in {st.session_state.language} at the {st.session_state.proficiency} level."
 )
