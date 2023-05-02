@@ -4,8 +4,6 @@ import openai
 import streamlit as st
 
 engine = st.secrets.GPT_MODEL
-# Define a function to prompt the user for input and generate a response
-
 
 def chat():
     with open(st.session_state.logfile, "rb") as f:
@@ -29,7 +27,7 @@ def chat():
 def get_response(messages):
     completion = openai.ChatCompletion.create(
         model=engine,
-        messages=messages,
+        messages=messages[1:],
     )
     response = completion.choices[0].message.content
     newitem = {
@@ -73,7 +71,20 @@ def build_dialogue():
 
 
 def show_feedback():
-    with open(st.session_state.logfile, "rb") as f:
-        messages = pickle.load(f)
+    messages = load_history(st.session_state.logfile)
+    # with open(st.session_state.logfile, "rb") as f:
+    #     messages = pickle.load(f)
 
     st.session_state.feedback = messages[-1]["content"]
+
+
+def load_history(filename):
+    with open(filename, "rb") as f:
+        history = pickle.load(f)
+
+    return history
+
+
+def save_history(filename, history):
+    with open(filename, "wb") as f:
+        pickle.dump(history, f)
