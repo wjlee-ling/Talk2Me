@@ -3,8 +3,9 @@ import pickle
 import openai
 import streamlit as st
 
+from util.utils import *
+
 engine = st.secrets.GPT_MODEL
-# Define a function to prompt the user for input and generate a response
 
 
 def chat():
@@ -23,13 +24,13 @@ def chat():
         )
         st.session_state.utterance = ""
         get_response(messages)
-        build_dialogue()
+        show_dialogue()
 
 
 def get_response(messages):
     completion = openai.ChatCompletion.create(
         model=engine,
-        messages=messages,
+        messages=messages[1:],
     )
     response = completion.choices[0].message.content
     newitem = {
@@ -47,18 +48,18 @@ def get_feedback():
         messages = pickle.load(f)
     feedback_request = {
         "role": "assistant",
-        "content": f"Given the past dialogue, could you give me feedback in Korean about the user's {st.session_state.language} considering my {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct me in details if i was wrong.",
+        "content": f"Given the past dialogue, could you give feedback in Korean about the user's (not assistant's) {st.session_state.language} considering his {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct user's mistake in details if there is any.",
     }
     messages.append(feedback_request)
     get_response(messages)
 
 
-def build_dialogue():
+def show_dialogue():
     dialogue = []
     with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
 
-    for turn in messages:
+    for turn in messages[1:]:
         role, content = turn["role"], turn["content"]
         if role == "system":
             # do not display initial prompt setting
