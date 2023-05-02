@@ -21,7 +21,7 @@ def chat():
         )
         st.session_state.utterance = ""
         get_response(messages)
-        build_dialogue()
+        show_dialogue()
 
 
 def get_response(messages):
@@ -51,7 +51,7 @@ def get_feedback():
     get_response(messages)
 
 
-def build_dialogue():
+def show_dialogue():
     dialogue = []
     with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
@@ -71,20 +71,8 @@ def build_dialogue():
 
 
 def show_feedback():
-    messages = load_history(st.session_state.logfile)
-    # with open(st.session_state.logfile, "rb") as f:
-    #     messages = pickle.load(f)
+    with open(st.session_state.logfile, "rb") as f:
+        messages = pickle.load(f)
 
     st.session_state.feedback = messages[-1]["content"]
-
-
-def load_history(filename):
-    with open(filename, "rb") as f:
-        history = pickle.load(f)
-
-    return history
-
-
-def save_history(filename, history):
-    with open(filename, "wb") as f:
-        pickle.dump(history, f)
+ 
