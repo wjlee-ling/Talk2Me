@@ -74,4 +74,4 @@ def show_feedback():
     with open(st.session_state.logfile, "rb") as f:
         messages = pickle.load(f)
 
-    st.session_state.feedback = messages[-1]
+    st.session_state.feedback = messages[-1]["content"]
