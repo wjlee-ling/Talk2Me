@@ -47,7 +47,7 @@ def get_feedback():
         messages = pickle.load(f)
     feedback_request = {
         "role": "assistant",
-        "content": f"Could you give me feedback in Korean about my {st.session_state.language} considering my {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct me in details if i was wrong.",
+        "content": f"Given the past dialogue, could you give me feedback in Korean about the user's {st.session_state.language} considering my {st.session_state.language} proficiency is {st.session_state.proficiency}? Correct me in details if i was wrong.",
     }
     messages.append(feedback_request)
     get_response(messages)
@@ -64,7 +64,9 @@ def build_dialogue():
             # do not display initial prompt setting
             continue
         elif role == "assistant":  # different bot names for different situations
-            role = "bot "
+            role = ":robot_face:"
+        elif role == "user":
+            role = ":loudspeaker:"
         dialogue.append(f"{role}: {content}")
 
     st.session_state.dialogue = "\n\n".join(dialogue)
