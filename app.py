@@ -19,7 +19,7 @@ language = st.sidebar.radio(
 )
 st.sidebar.subheader("Proficiency")
 proficiency = st.sidebar.radio(
-    f"CHoose yours {st.session_state.language} proficiency level",
+    f"Choose yours {st.session_state.language} proficiency level",
     key="proficiency",
     options=["Beginner", "Intermediate", "Advanced"],
 )
