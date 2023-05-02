@@ -38,9 +38,6 @@ with st.form("setting"):
         key="proficiency",
         options=["Beginner", "Intermediate", "Advanced"],
     )
-    # st.write(
-    #     f"We're in {st.session_state.situation}. Let's talk in {st.session_state.language} at the {st.session_state.proficiency} level."
-    # )
     submitted = st.form_submit_button("Let's talk!")
 
 if submitted:
@@ -79,11 +76,3 @@ if submitted:
             pickle.dump(setting_prompt, f)
 
     switch_page("interface")
-
-# if "dialogue" not in st.session_state:
-#     st.session_state.dialogue = ""
-# st.write(st.session_state.dialogue)
-# st.text_input(r"👇", key="utterance", on_change=chat)
-# st.button("Quit", key="end_conversation", on_click=chat)
-# if "feedback" in st.session_state:
-#     st.write(st.session_state.feedback)
