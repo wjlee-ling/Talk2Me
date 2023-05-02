@@ -17,9 +17,15 @@ language = st.sidebar.radio(
     key="language",
     options=["English", "Korean", "German"],
 )
+st.sidebar.subheader("Situation")
+situation = st.sidebar.radio(
+    "Whare are you now?",
+    key="situation",
+    options=["Starbucks", "Movie theater", "McDonald's", "Subway", "Zara", "Bar"]
+)
 st.sidebar.subheader("Proficiency")
 proficiency = st.sidebar.radio(
-    f"Choose yours {st.session_state.language} proficiency level",
+    f"Choose your {st.session_state.language} proficiency level",
     key="proficiency",
     options=["Beginner", "Intermediate", "Advanced"],
 )
@@ -28,6 +34,7 @@ st.write(
 )
 if (
     "language" in st.session_state
+    and "situation" in st.session_state
     and "proficiency" in st.session_state
     and "logfile" not in st.session_state
 ):  # ❗️TO-DO: file name w/ user unique ID
@@ -36,7 +43,8 @@ if (
         setting_prompt: typing.List[dict] = [
             {
                 "role": "system",
-                "content": f"Let's play role-play. Remember that I'm a Korean learning {st.session_state.language} and you are a fluent {st.session_state.language} speaker. My proficieny of {st.session_state.language} is {st.session_state.proficiency}. Let's say you work at a coffee shop and I am a client.",
+                "content": f"Let's play role-play. Remember that I'm a Korean learning {st.session_state.language} and you are a fluent {st.session_state.language} speaker.\
+                My proficieny of {st.session_state.language} is {st.session_state.proficiency}. Let's say you work at a {st.session_state.situation} shop and I am a client.",
             },
         ]
         pickle.dump(setting_prompt, f)
