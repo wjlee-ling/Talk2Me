@@ -1,78 +1,42 @@
 import typing
 import pickle
+import random
 import openai
 import streamlit as st
+from collections import defaultdict
 from util.utils import *
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 
-# from chat import chat
-
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-hide_pages(["interface"])
+hide_pages(["question1", "question2", "question3"])
 
-st.title("Talk 2 Me")
-st.header("Tell me about yourself")
+st.title("Talk")
+st.header("Background Survey")
 with st.form("setting"):
-    st.subheader("Language")
-    language = st.radio(
-        "Choose a language to learn",
-        key="language",
-        options=["English", "Korean", "German"],
+    # 서베이 예시 https://seul96.tistory.com/329
+    st.subheader("What do you do for fun?")
+    hobby = st.radio(
+        "Choose one of the following",
+        key="hobby",
+        options=["Go to the movies", "Read books"],
     )
-    st.subheader("Situation")
-    situation = st.radio(
-        "Whare are you now?",
-        key="situation",
-        options=[
-            "Starbucks",
-            "AMC(movie theater)",
-            "McDonald's",
-            "Subway(restaurant)",
-            "Zara",
-        ],
-    )
-    st.subheader("Proficiency")
-    proficiency = st.radio(
-        f"Choose your {st.session_state.language} proficiency level",
-        key="proficiency",
-        options=["Beginner", "Intermediate", "Advanced"],
-    )
-    submitted = st.form_submit_button("Let's talk!")
+
+    submitted = st.form_submit_button("Start Test")
 
 if submitted:
-    # setting_prompt: typing.List[dict] = [
-    #             {
-    #                 "role": "system",
-    #                 "content": f"Let's play role-play. Remember that I'm a Korean learning {st.session_state.language} and you are a fluent {st.session_state.language} speaker.\
-    #                 My proficieny of {st.session_state.language} is {st.session_state.proficiency}. Let's say you work at {st.session_state.situation} and I am a client.",
-    #             },
-    #         ]
+    if "questions" not in st.session_state:
+        Q_go_movies = [
+            "You indicated in the survey that you like to go to the movies. Can you describe the last movie you watched?",
+            "Who is your favorite movie actor or actress? Tell me a specific story about something this actor did that you heard about in the news. Begins the story with some details about the actor or actress and then tell me all the detail of what happened.",
+            "I'd like you to tell me about one of the most memorable movies you've seen. What is the story about? Who was the main actor or actress? How did the movie affect you?",
+        ]
+        st.session_state.questions = [""] + random.sample(Q_go_movies, 2)
+        print(st.session_state.questions)
+        st.session_state.answers = defaultdict(str)
 
-    # log = load_history("log.pickle")
-    # log.append({
-    #     "language": st.session_state.language,
-    #     "situation": st.session_state.situation,
-    #     "proficiency": st.session_state.proficiency,
-    # })
-    # log.append(setting_prompt)
-    # save_history("log.pickle", log)
-
-    if "logfile" not in st.session_state:  # ❗️TO-DO: file name w/ user unique ID
+    if "logfile" not in st.session_state:
         st.session_state.logfile = "log.pickle"
-        with open(st.session_state.logfile, "wb") as f:
-            setting_prompt: typing.List[dict] = [
-                {
-                    "language": st.session_state.language,
-                    "situation": st.session_state.situation,
-                    "proficiency": st.session_state.proficiency,
-                },
-                {
-                    "role": "system",
-                    "content": f"Let's play role-play. Remember that I'm a Korean learning {st.session_state.language} and you are a fluent {st.session_state.language} speaker.\
-                    My proficieny of {st.session_state.language} is {st.session_state.proficiency}. Let's say you work at {st.session_state.situation} and I am a client.",
-                },
-            ]
-            pickle.dump(setting_prompt, f)
-
-    switch_page("interface")
+        # with open(st.session_state.logfile, "wb") as f:
+    switch_page("question1")
+ 
