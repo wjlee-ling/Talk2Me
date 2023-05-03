@@ -1,6 +1,8 @@
 import streamlit as st
 from util.chat import chat
 from util.utils import *
+from util.st_custom_components import st_audiorec
+
 
 st.session_state.logfile = "log.pickle"
 log = load_history(st.session_state.logfile)
@@ -16,7 +18,8 @@ st.write(
 if "dialogue" not in st.session_state:
     st.session_state.dialogue = ""
 st.write(st.session_state.dialogue)
-st.text_input(r"👇", key="utterance", on_change=chat)
-st.button("Quit", key="end_conversation", on_click=chat)
-if "feedback" in st.session_state:
-    st.write(st.session_state.feedback)
+wav_audio_data = st_audiorec()
+# st.text_input(r"👇", key="utterance", on_change=chat)
+# st.button("Quit", key="end_conversation", on_click=chat)
+# if "feedback" in st.session_state:
+#     st.write(st.session_state.feedback)
