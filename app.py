@@ -26,8 +26,8 @@ with st.form("setting"):
     submitted = st.form_submit_button("Start Test")
 
 if submitted:
-    db = Database.init_database(user_id="admin")
-    
+    st.session_state.db = Database.init_database(user_id="admin", theme="_".join(hobby))
+
     if "questions" not in st.session_state:
         Q_go_movies = [
             "You indicated in the survey that you like to go to the movies. Can you describe the last movie you watched?",

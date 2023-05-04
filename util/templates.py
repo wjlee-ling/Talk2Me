@@ -3,10 +3,11 @@ from util.utils import *
 from util.speech_to_text import get_mic_input, get_transcript
 
 import streamlit as st
+from datetime import datetime
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 
-# @st.cache_data(experimental_allow_widgets=True)
+
 def question_template(page_idx):
     # hide_idx = ["question"+str(idx) for idx in range(1, page_idx)]
     # hide_pages(hide_idx)
@@ -22,10 +23,21 @@ def question_template(page_idx):
                 f.write(wav_bytes)
             audio = open(f"q{page_idx}.wav", "rb")
             transcript = get_transcript(audio)
-            st.session_state.answers[page_idx] = transcript
+            st.session_state.db.insert_one(
+                collection = "interviews",
+                insertion = {
+                "question" : st.session_state.db.questions[page_idx],
+                "answer" : transcript,
+                }
+            )
 
-    if st.session_state.answers[page_idx] != "":
-        st.write(st.session_state.answers[page_idx])
+    doc = st.session_state.db.find_one(
+        collection="interviews",
+        hint=st.session_state.questions[page_idx],
+        )
+    
+    if doc and "answer" in doc:
+        st.write(doc.answer)
         if page_idx != 2: 
             if st.button("next"):
                 switch_page(f"question{page_idx+1}")
