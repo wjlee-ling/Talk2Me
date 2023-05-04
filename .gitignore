@@ -8,3 +8,4 @@ __pycache__/
 # pickle files and metadata files
 *.pickle
 last_seen_query.txt
+database/
