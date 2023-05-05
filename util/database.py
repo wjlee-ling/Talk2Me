@@ -42,6 +42,9 @@ class Database:
         return self.db[collection].find_one(hint)
 
     def update_document(self, collection, file_path):
+        """
+        Read updated local json file and reflect new changes to MongoDB server
+        """
         with open(file_path, encoding="UTF-8") as f:
             json_object = json.load(f)
         doc_id = json_object["_id"]
@@ -54,6 +57,12 @@ class Database:
     def get_interview_questions(self, theme: str):
         hint = {"theme": theme}
         return self.db["questions"].find_one(hint)["questions"]
+
+    def update_feedback(self, question, feedback):
+        self.db["interviews"].update_one(
+            filter={"user_id": self.user_id, "theme": self.theme, "question": question},
+            update={"$set": {"feedback": feedback}},
+        )
 
 
 if __name__ == "__main__":
