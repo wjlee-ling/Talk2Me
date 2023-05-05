@@ -1,7 +1,8 @@
+import json
 import streamlit as st
 
 from datetime import datetime
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass
 from pymongo import MongoClient
 
 
@@ -9,32 +10,52 @@ from pymongo import MongoClient
 class Database:
     user_id: str
     theme: str
-    # db:InitVar = field(init=False)
 
     def __post_init__(self):
         client = MongoClient(st.secrets["mongo_uri"])
         self.db = client.get_database("opic")
+        self.theme = self.theme.replace(" ", "_")
 
     @classmethod
     def init_database(cls, user_id, theme):
         return Database(user_id=user_id, theme=theme)
     
     def get_current_time(self):
-        return datetime.now()
+        return datetime.now().strftime("%Y%m%d%H%M")
     
     def insert_one(self, collection, insertion:dict):
         assert collection in self.db.list_collection_names()
         insertion["theme"] = self.theme
         insertion["user_id"] = self.user_id
-        insertion["time"] = self.get_current_time
+        insertion["time"] = self.get_current_time()
         insertion["collection"] = collection
         post_id = self.db[collection].insert_one(insertion).inserted_id
 
         return post_id
 
     def find_one(self, collection, hint:dict):
+        assert collection in self.db.list_collection_names()
         hint["user_id"] = self.user_id
         hint["theme"] = self.theme
         hint["collection"] = collection
 
         return self.db[collection].find_one(hint)
+    
+    def update_document(self, collection, file_path):
+        with open(file_path, encoding="UTF-8") as f:
+            json_object = json.load(f)
+        theme = json_object["theme"]
+        response = self.db[collection].update_one(
+            filter={"theme":theme}, update={"$set": json_object}, upsert=True,
+        )
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-p", "--path")
+    parser.add_argument("-c", "--collection")
+    args = parser.parse_args()
+
+    database = Database(user_id="admin", theme="test")
+    database.update_document(collection=args.collection, file_path=args.path)
