@@ -29,10 +29,11 @@ with st.form("setting"):
 
 if submitted:
     st.session_state.db = Database.init_database(user_id="admin", theme=hobby)
+    st.session_state.n_questions = 3
 
     if "questions" not in st.session_state:
         questions = st.session_state.db.get_interview_questions(hobby)
-        st.session_state.questions = ["dummy"] + random.sample(questions, 2)
+        st.session_state.questions = ["dummy"] + random.sample(questions, st.session_state.n_questions)
         print(st.session_state.questions)
         st.session_state.answers = defaultdict(str)
 
