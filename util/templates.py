@@ -9,7 +9,7 @@ from st_pages import hide_pages
 
 
 def question_template(page_idx):
-    hide_idx = ["question"+str(idx) for idx in range(page_idx+1, st.session_state.n_questions+1)]
+    hide_idx = ["Question"+str(idx) for idx in range(page_idx+1, st.session_state.n_questions+1)]
     hide_pages(hide_idx)
     st.subheader(f"Q{page_idx}. {st.session_state.questions[page_idx]}")
 
@@ -40,4 +40,4 @@ def question_template(page_idx):
         st.write(doc["answer"])
         if page_idx != st.session_state.n_questions: 
             if st.button("next"):
-                switch_page(f"question{page_idx+1}")
+                switch_page(f"Question{page_idx+1}")

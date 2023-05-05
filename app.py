@@ -9,7 +9,7 @@ from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-hide_pages(["question1", "question2", "question3"])
+hide_pages(["Question1", "Question2", "Question3"])
 
 st.title("Talk")
 st.header("Background Survey")
@@ -34,7 +34,6 @@ if submitted:
     if "questions" not in st.session_state:
         questions = st.session_state.db.get_interview_questions(hobby)
         st.session_state.questions = ["dummy"] + random.sample(questions, st.session_state.n_questions)
-        print(st.session_state.questions)
         st.session_state.answers = defaultdict(str)
 
-    switch_page("question1")
+    switch_page("Question1")
