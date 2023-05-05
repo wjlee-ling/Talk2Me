@@ -19,11 +19,11 @@ class Database:
     @classmethod
     def init_database(cls, user_id, theme):
         return Database(user_id=user_id, theme=theme)
-    
+
     def get_current_time(self):
         return datetime.now().strftime("%Y%m%d%H%M")
-    
-    def insert_one(self, collection, insertion:dict):
+
+    def insert_one(self, collection, insertion: dict):
         assert collection in self.db.list_collection_names()
         insertion["theme"] = self.theme
         insertion["user_id"] = self.user_id
@@ -33,21 +33,24 @@ class Database:
 
         return post_id
 
-    def find_one(self, collection, hint:dict):
+    def find_one(self, collection, hint: dict):
         assert collection in self.db.list_collection_names()
         hint["user_id"] = self.user_id
         hint["theme"] = self.theme
         hint["collection"] = collection
 
         return self.db[collection].find_one(hint)
-    
+
     def update_document(self, collection, file_path):
         with open(file_path, encoding="UTF-8") as f:
             json_object = json.load(f)
-        theme = json_object["theme"]
+        doc_id = json_object["_id"]
         response = self.db[collection].update_one(
-            filter={"theme":theme}, update={"$set": json_object}, upsert=True,
+            filter={"_id": doc_id},
+            update={"$set": json_object},
+            upsert=True,
         )
+
 
 if __name__ == "__main__":
     import argparse
