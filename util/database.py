@@ -51,6 +51,10 @@ class Database:
             upsert=True,
         )
 
+    def get_interview_questions(self, theme: str):
+        hint = {"theme": theme}
+        return self.db["questions"].find_one(hint)["questions"]
+
 
 if __name__ == "__main__":
     import argparse
