@@ -54,8 +54,14 @@ class Database:
         )
 
     def get_interview_questions(self, theme: str):
-        hint = {"theme": theme}
-        return self.db["questions"].find_one(hint)["questions"]
+        items = []
+        for type in ["description", "experience", "habit", "comparison"]:  
+            results = self.db["questions"].aggregate(
+                [{"$unwind":"$items"}, {"$match": {"items.type":type}}, {"$sample": {"size":1}}] 
+                )
+            for result in results:
+                items.append(result["items"]["question"])
+        return items 
 
     def update_feedback(self, question, feedback):
         self.db["interviews"].update_one(

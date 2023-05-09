@@ -32,8 +32,8 @@ if submitted:
     st.session_state.n_questions = 3
 
     if "questions" not in st.session_state:
-        questions = st.session_state.db.get_interview_questions(leisure)
-        st.session_state.questions = ["dummy"] + random.sample(questions, st.session_state.n_questions)
+        st.session_state.questions = ["dummy"] + st.session_state.db.get_interview_questions(leisure)[:st.session_state.n_questions]
+        # print(st.session_state.questions)
         st.session_state.answers = defaultdict(str)
 
     switch_page("Question1")
