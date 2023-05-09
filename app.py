@@ -4,7 +4,7 @@ import openai
 import streamlit as st
 from collections import defaultdict
 from util.utils import *
-from util.database import Database
+from util.query_database import Database
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 

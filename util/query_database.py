@@ -47,7 +47,6 @@ class Database:
         """
         with open(file_path, encoding="UTF-8") as f:
             json_object = json.load(f)
-        # doc_id = json_object["_id"]
         response = self.db[collection].update_one(
             filter={"theme": json_object["theme"]},
             update={"$set": json_object},
