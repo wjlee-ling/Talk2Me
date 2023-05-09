@@ -47,9 +47,9 @@ class Database:
         """
         with open(file_path, encoding="UTF-8") as f:
             json_object = json.load(f)
-        doc_id = json_object["_id"]
+        # doc_id = json_object["_id"]
         response = self.db[collection].update_one(
-            filter={"_id": doc_id},
+            filter={"theme": json_object["theme"]},
             update={"$set": json_object},
             upsert=True,
         )
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path")
-    parser.add_argument("-c", "--collection")
+    parser.add_argument("-c", "--collection", default="questions")
     args = parser.parse_args()
 
     database = Database(user_id="admin", theme="test")
