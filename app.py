@@ -15,10 +15,10 @@ st.title("Talk")
 st.header("Background Survey")
 with st.form("setting"):
     st.subheader("What do you do for fun?")
-    hobby = (
+    leisure = (
         st.radio(
             "Choose one of the following",
-            key="hobby",
+            key="leisure",
             options=["Watch movies", "Read books"],
         )
         .lower()
@@ -28,11 +28,11 @@ with st.form("setting"):
     submitted = st.form_submit_button("Start Test")
 
 if submitted:
-    st.session_state.db = Database.init_database(user_id="admin", theme=hobby)
+    st.session_state.db = Database.init_database(user_id="admin", theme=leisure)
     st.session_state.n_questions = 3
 
     if "questions" not in st.session_state:
-        questions = st.session_state.db.get_interview_questions(hobby)
+        questions = st.session_state.db.get_interview_questions(leisure)
         st.session_state.questions = ["dummy"] + random.sample(questions, st.session_state.n_questions)
         st.session_state.answers = defaultdict(str)
 
