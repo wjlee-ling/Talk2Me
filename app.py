@@ -28,8 +28,7 @@ with st.form("setting"):
     submitted = st.form_submit_button("Start Test")
 
 if submitted:
-    st.session_state.db = Database.init_database(user_id="admin", theme=leisure)
-    st.session_state.n_questions = 3
+    st.session_state.db = Database.init_database(user_id="admin", theme=leisure, n_questions=3)
 
     if "questions" not in st.session_state:
         st.session_state.questions = ["dummy"] + st.session_state.db.get_interview_questions(leisure)[:st.session_state.n_questions]

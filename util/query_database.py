@@ -10,6 +10,7 @@ from pymongo import MongoClient
 class Database:
     user_id: str
     theme: str
+    n_questions: int
 
     def __post_init__(self):
         client = MongoClient(st.secrets["mongo_uri"])
@@ -60,7 +61,7 @@ class Database:
                 [{"$unwind":"$items"}, {"$match": {"items.type":type}}, {"$sample": {"size":1}}] 
                 )
             for result in results:
-                items.append(result["items"]["question"])
+                items.append(result["items"])
         return items 
 
     def update_feedback(self, question, feedback):
