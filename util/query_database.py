@@ -10,6 +10,7 @@ from pymongo import MongoClient
 class Database:
     user_id: str
     theme: str
+    entry_time: str
     n_questions: int
 
     def __post_init__(self):
@@ -19,9 +20,15 @@ class Database:
 
     @classmethod
     def init_database(cls, user_id, theme, n_questions):
-        return Database(user_id=user_id, theme=theme, n_questions=n_questions)
+        return Database(
+            user_id=user_id,
+            theme=theme,
+            entry_time=cls.get_current_time(),
+            n_questions=n_questions,
+        )
 
-    def get_current_time(self):
+    @staticmethod
+    def get_current_time():
         return datetime.now().strftime("%Y%m%d%H%M")
 
     def insert_one(self, collection, insertion: dict):
@@ -56,13 +63,17 @@ class Database:
 
     def get_interview_questions(self, theme: str):
         items = []
-        for type in ["description", "experience", "habit", "comparison"]:  
+        for type in ["description", "experience", "habit", "comparison"]:
             results = self.db["questions"].aggregate(
-                [{"$unwind":"$items"}, {"$match": {"items.type":type}}, {"$sample": {"size":1}}] 
-                )
+                [
+                    {"$unwind": "$items"},
+                    {"$match": {"items.type": type}},
+                    {"$sample": {"size": 1}},
+                ]
+            )
             for result in results:
                 items.append(result["items"])
-        return items 
+        return items
 
     def update_feedback(self, question, feedback):
         self.db["interviews"].update_one(
