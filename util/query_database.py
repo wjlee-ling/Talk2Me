@@ -18,8 +18,8 @@ class Database:
         self.theme = self.theme.replace(" ", "_")
 
     @classmethod
-    def init_database(cls, user_id, theme):
-        return Database(user_id=user_id, theme=theme)
+    def init_database(cls, user_id, theme, n_questions):
+        return Database(user_id=user_id, theme=theme, n_questions=n_questions)
 
     def get_current_time(self):
         return datetime.now().strftime("%Y%m%d%H%M")
