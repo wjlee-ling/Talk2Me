@@ -8,9 +8,10 @@ from pymongo import MongoClient
 
 @dataclass
 class Database:
-    user_id: str
+    user_id: str # to be replaced w/ authentic user id
     theme: str
     n_questions: int
+    session_time: str
 
     def __post_init__(self):
         client = MongoClient(st.secrets["mongo_uri"])
@@ -26,6 +27,7 @@ class Database:
         insertion["user_id"] = self.user_id
         insertion["time"] = self.get_current_time()
         insertion["collection"] = collection
+        insertion["session_time"] = self.session_time
         post_id = self.db[collection].insert_one(insertion).inserted_id
 
         return post_id
@@ -35,6 +37,7 @@ class Database:
         hint["user_id"] = self.user_id
         hint["theme"] = self.theme
         hint["collection"] = collection
+        hint["session_time"] = self.session_time
 
         return self.db[collection].find_one(hint)
 
@@ -71,11 +74,14 @@ class Database:
         )
 
 @st.cache_resource
-def init_database(user_id, theme, n_questions):
+def init_database(user_id, theme, n_questions, session_time=None):
+    if session_time is None:
+        session_time = datetime.now().strftime("%Y%m%d%H%M%S")
     return Database(
         user_id=user_id,
         theme=theme,
         n_questions=n_questions,
+        session_time=session_time
     )
 
 

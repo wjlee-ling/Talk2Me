@@ -29,11 +29,11 @@ with st.form("setting"):
     submitted = st.form_submit_button("Start Test")
 
 if submitted:
-    st.session_state.db = init_database(user_id="admin4", theme=leisure, n_questions=3)
+    st.session_state.db = init_database(user_id="admin", theme=leisure, n_questions=3)
 
     if "questions" not in st.session_state:
         st.session_state.questions = ["dummy"] + st.session_state.db.get_interview_questions(leisure)[:st.session_state.db.n_questions]
         st.session_state.answers = defaultdict(str)
 
     if "questions" in st.session_state:
-        question_template(1)
+        question_template(page_idx=1)
