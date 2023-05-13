@@ -10,7 +10,6 @@ from pymongo import MongoClient
 class Database:
     user_id: str
     theme: str
-    entry_time: str
     n_questions: int
 
     def __post_init__(self):
@@ -18,17 +17,7 @@ class Database:
         self.db = client.get_database("opic")
         self.theme = self.theme.replace(" ", "_")
 
-    @classmethod
-    def init_database(cls, user_id, theme, n_questions):
-        return Database(
-            user_id=user_id,
-            theme=theme,
-            entry_time=cls.get_current_time(),
-            n_questions=n_questions,
-        )
-
-    @staticmethod
-    def get_current_time():
+    def get_current_time(self):
         return datetime.now().strftime("%Y%m%d%H%M")
 
     def insert_one(self, collection, insertion: dict):
@@ -80,6 +69,14 @@ class Database:
             filter={"user_id": self.user_id, "theme": self.theme, "question": question},
             update={"$set": {"feedback": feedback}},
         )
+
+@st.cache_resource
+def init_database(user_id, theme, n_questions):
+    return Database(
+        user_id=user_id,
+        theme=theme,
+        n_questions=n_questions,
+    )
 
 
 if __name__ == "__main__":
