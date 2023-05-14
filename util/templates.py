@@ -64,11 +64,6 @@ def qa_template(page_idx: int):
 
         if st.button("Next", key=f"next_button_{sst.current_idx}"):
             _update_feedback(page_idx, doc)
-
-            # if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions
-            #     # redirect to feedback page
-            #     feedback_template(page_idx)
-            # else:
             sst.current_idx += 1
             st.experimental_rerun()
 
@@ -85,11 +80,14 @@ def feedback_template(page_idx):
         return formatted
 
     feedback_ls = []
+    sst["item_ids"] = []
     for idx in range(1, page_idx):
         question = sst["questions"][idx]["question"]
         answer = sst["answers"][idx]["transcript"]
-        feedback = sst["answers"][idx]["feedback"].replace("[Q]", "").replace("[A]", "").strip().replace("  ", " ")
+        feedback = sst["answers"][idx]["feedback"].strip()
         feedback_ls.append(_format_feedback(question, answer, feedback))
+
+        sst["item_ids"].append(sst["answers"][idx]["id"])
 
     st.subheader("💁‍♀️Ava thinks...")
     feedback = "\n".join(feedback_ls)
@@ -121,5 +119,11 @@ def user_feedback_template(page_idx):
         st.warning("Want to hear more from you!")
 
     elif satisfaction and user_comment and st.button("Send"):
+        # send user feedback to database
+        sst.db.insert_user_feedback(
+            _item_ids=sst["item_ids"],
+            satisfaction=satisfaction,
+            comment=user_comment,
+        )
         sst.user_feedback = "sent"
         st.experimental_rerun()

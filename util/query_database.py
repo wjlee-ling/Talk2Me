@@ -80,6 +80,18 @@ class Database:
             filter={"_id": _item_id, "question": question},
             update={"$set": {"feedback": feedback}},
         )
+    
+    @st.cache_data
+    def insert_user_feedback(self, _item_ids, satisfaction, comment):
+        print("DB: add user feedback")
+        user_feedback = {
+            "user_id":self.user_id,
+            "session_time":self.session_time,
+            "ids":_item_ids,
+            "satisfaction":satisfaction,
+            "comment":comment,
+        }
+        self.db["user_feedback"].insert_one(user_feedback)
 
 
 @st.cache_resource
