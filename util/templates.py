@@ -73,5 +73,23 @@ def qa_template(page_idx: int):
                 sst.current_idx += 1
                 st.experimental_rerun()
 
-def feedback_template():
-    pass
+@st.cache_data
+def feedback_template(page_idx):
+    def _format_feedback(question, answer, feedback):
+        formatted = f"""
+        **Q. {question}**\n
+        A. {answer}\n
+        [Feedback]\n
+        {feedback}\n\n
+        """
+        return formatted
+    
+    feedback_combined = ''
+    for idx in range(1, len(sst["questions"])):
+        question = sst["questions"][idx]
+        answer = sst["answers"][idx]["transcript"]
+        feedback = sst["answers"][idx]["feedback"]
+        feedback_combined += _format_feedback(question, answer, feedback)
+    
+    print(feedback_combined)
+    st.write(feedback_combined)
