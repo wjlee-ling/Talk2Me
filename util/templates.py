@@ -21,15 +21,7 @@ def qa_template(page_idx):
 
     wav_bytes = get_mic_input()
     print("======================")
-    print(st.session_state.current_idx)
-
-    doc = st.session_state.db.find_one(
-        collection="interviews",
-        hint={
-            "question": question_content,
-            "type": question_type,
-        },
-    )
+    print(page_idx)
 
     if wav_bytes:
         sst["answers"][page_idx]["wav"] = wav_bytes
@@ -51,19 +43,16 @@ def qa_template(page_idx):
             },
         )
 
-        return qa_template(sst.current_idx)
+    doc = st.session_state.db.find_one(
+        collection="interviews",
+        hint={
+            "question": question_content,
+            "type": question_type,
+        },
+    )    
 
-    else:
+    if doc is not None:
         st.write(doc["answer"])
-
-    # if doc and "answer" in doc:
-
-    #     if st.button("Get Feedback", key=f"feedback_button_{sst.current_idx}"):
-    #         if doc["feedback"] == "":
-    #             feedback = get_feedback(doc)
-    #             st.write(feedback)
-    #             sst.db.update_feedback(question=doc["question"], feedback=feedback)
-    #         else:
-    #             st.subheader("Feedback")
-    #             st.write(doc["feedback"])
-
+        if st.button("Next", key=f"next_button_{sst.current_idx}"):
+            sst.current_idx = 2
+            st.experimental_rerun()
