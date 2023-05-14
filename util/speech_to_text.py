@@ -14,8 +14,12 @@ def get_mic_input():
     st_audiorec = components.declare_component("st_audiorec", path=build_dir)
 
     # Create an instance of the component: STREAMLIT AUDIO RECORDER
-    raw_audio_data = st_audiorec(key=st.session_state.current_idx)  # raw_audio_data: stores all the data returned from the streamlit frontend
-    wav_bytes = None  # wav_bytes: contains the recorded audio in .WAV format after conversion
+    raw_audio_data = st_audiorec(
+        key=st.session_state.current_idx
+    )  # raw_audio_data: stores all the data returned from the streamlit frontend
+    wav_bytes = (
+        None  # wav_bytes: contains the recorded audio in .WAV format after conversion
+    )
 
     # the frontend returns raw audio data in the form of arraybuffer
     # (this arraybuffer is derived from web-media API WAV-blob data)
@@ -33,5 +37,10 @@ def get_mic_input():
 
 
 def get_transcript(audio_file):
-    transcript = openai.Audio.transcribe("whisper-1", audio_file)["text"]
+    transcript = openai.Audio.transcribe(
+        model="whisper-1",
+        file=audio_file,
+        language="en",
+        prompt=st.secrets["sst_transcript_prompt"],
+    )["text"]
     return transcript
