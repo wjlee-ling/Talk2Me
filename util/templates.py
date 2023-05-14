@@ -33,11 +33,11 @@ def qa_template(page_idx: int):
             },
         )
         st.experimental_rerun()
-    
-    @st.cache_data
+
     def _update_feedback(page_idx: int, doc: dict):
-        feedback = get_feedback(doc)
-        sst.db.update_feedback(item_id=doc["_id"], feedback=feedback)
+        question, answer = doc["question"], doc["answer"]
+        feedback = get_feedback(question, answer)
+        sst.db.update_feedback(_item_id=doc["_id"], question=question, feedback=feedback)
         sst["answers"][page_idx]["id"] = doc["_id"]
         sst["answers"][page_idx]["feedback"] = feedback
 
@@ -61,17 +61,17 @@ def qa_template(page_idx: int):
     elif doc is not None:
         # display user answer
         st.write(doc["answer"])
-        
+
         if st.button("Next", key=f"next_button_{sst.current_idx}"):
             _update_feedback(page_idx, doc)
 
-            if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions
-                # redirect to feedback page
-                feedback_template()
+            # if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions
+            #     # redirect to feedback page
+            #     feedback_template(page_idx)
+            # else:
+            sst.current_idx += 1
+            st.experimental_rerun()
 
-            else:
-                sst.current_idx += 1
-                st.experimental_rerun()
 
 @st.cache_data
 def feedback_template(page_idx):
@@ -83,13 +83,13 @@ def feedback_template(page_idx):
         {feedback}\n\n
         """
         return formatted
-    
-    feedback_combined = ''
-    for idx in range(1, len(sst["questions"])):
-        question = sst["questions"][idx]
+
+    feedback_combined = ""
+    for idx in range(1, page_idx):
+        question = sst["questions"][idx]["question"]
         answer = sst["answers"][idx]["transcript"]
-        feedback = sst["answers"][idx]["feedback"]
+        feedback = sst["answers"][idx]["feedback"].replace("[Q]", "").replace("[A]", "").strip().replace("  ", " ")
         feedback_combined += _format_feedback(question, answer, feedback)
-    
+
     print(feedback_combined)
     st.write(feedback_combined)

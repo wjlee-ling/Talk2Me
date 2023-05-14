@@ -33,7 +33,7 @@ if "db" not in sst:
             sst.current_idx = 1
             st.experimental_rerun()
 else:
-    if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions:
+    if sst.current_idx > sst.db.n_questions: # To-do : n_themes * n_questions:
         feedback_template(page_idx=sst.current_idx)
     else:
         qa_template(page_idx=sst.current_idx)

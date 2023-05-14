@@ -8,7 +8,7 @@ from pymongo import MongoClient
 
 @dataclass
 class Database:
-    user_id: str # to be replaced w/ authentic user id
+    user_id: str  # to be replaced w/ authentic user id
     theme: str
     n_questions: int
     session_time: str
@@ -41,7 +41,7 @@ class Database:
         hint["collection"] = collection
         hint["session_time"] = self.session_time
 
-        latest = self.db[collection].find(hint).sort("submit_time",-1).limit(1)
+        latest = self.db[collection].find(hint).sort("submit_time", -1).limit(1)
         try:
             return latest[0]
         except IndexError:
@@ -74,24 +74,20 @@ class Database:
         return items
 
     @st.cache_data
-    def update_feedback(self, item_id, feedback):
+    def update_feedback(self, _item_id, question, feedback):
         print("DB: add feedback")
         self.db["interviews"].update_one(
-            filter={"_id": item_id},
+            filter={"_id": _item_id, "question": question},
             update={"$set": {"feedback": feedback}},
         )
+
 
 @st.cache_resource
 def init_database(user_id, theme, n_questions, session_time=None):
     print("DB: connected")
     if session_time is None:
         session_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    return Database(
-        user_id=user_id,
-        theme=theme,
-        n_questions=n_questions,
-        session_time=session_time
-    )
+    return Database(user_id=user_id, theme=theme, n_questions=n_questions, session_time=session_time)
 
 
 if __name__ == "__main__":

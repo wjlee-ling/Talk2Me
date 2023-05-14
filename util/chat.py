@@ -18,7 +18,8 @@ def get_response(messages):
     return response
 
 
-def get_feedback(doc):
+@st.cache_data
+def get_feedback(question, answer):
     messages = [
         {
             "role": "system",
@@ -26,7 +27,7 @@ def get_feedback(doc):
         },
         {
             "role": "user",
-            "content": f"[Q] {doc['question']} [A] {doc['answer']}",
+            "content": f"[Q] {question} [A] {answer}",
         },
     ]
     response = get_response(messages)
