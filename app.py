@@ -5,9 +5,6 @@ from util.templates import qa_template, feedback_template
 from util.query_database import init_database
 from streamlit import session_state as sst
 
-def update_idx(idx):
-    sst.current_idx = idx
-
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
