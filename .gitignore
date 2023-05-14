@@ -1,3 +1,17 @@
-/.streamlit
 .env
 .python-version
+__pycache__/
+
+# secrets
+/.streamlit/secrets.toml
+
+# pickle files and metadata files
+*.pickle
+last_seen_query.txt
+database/
+.vscode/
+
+# audio files
+*.wav
+
+test.py

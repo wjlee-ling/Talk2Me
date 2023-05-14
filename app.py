@@ -1,92 +1,36 @@
-import os
-import time
-import typing
 import openai
 import streamlit as st
+from util.utils import *
+from util.templates import qa_template, feedback_template
+from util.query_database import init_database
+from streamlit import session_state as sst
+
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-engine = st.secrets.GPT_MODEL
 
-st.title("Talk 2 Me")
-
-st.header("Let's get to know.")
-
-st.subheader("Language")
-language = st.radio(
-    "Choose a language to learn",
-    options=["English", "Korean", "German"],
-)
-
-st.subheader("Proficiency")
-proficiency = st.radio(
-    f"Your {language} proficiency level",
-    options=["Beginner", "Intermediate", "Advanced"],
-)
-
-
-def input_prmpt(messages: typing.List[dict]) -> str:
-    completion = openai.ChatCompletion.create(
-        model=engine,
-        messages=messages,
-    )
-    return completion.choices[0].message.content
-
-
-# Define a function to prompt the user for input and generate a response
-def chat():
-    messages: typing.List[dict] = [
-        {
-            "role": "system",
-            "content": f"Let's play role-play. Remember that I'm a Korean learning {language} and you are a fluent {language} speaker.\
-            My proficieny of {language} is {proficiency}. Let's say you work at a coffee shop and I am a client.",
-        },
-        {"role": "user", "content": "Hi"},
-    ]
-
-    turns = 0
-    prompt = st.text_input(label="You: ", key=turns)
-    st.write(f"You: {prompt}")
-    turns = 0
-    while len(prompt) > 0 and prompt != "quit":
-        if turns == 7:
-            break
-        turns += 1
-        messages.append(
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        )
-        response = input_prmpt(messages)
-        st.write("Bot: ", response)
-        messages.append(
-            {
-                "role": "assistant",
-                "content": response,
-            }
+st.title("Talk2Ava")
+if "db" not in sst:
+    with st.form("setting"):
+        st.header("Background Survey")
+        st.subheader("What do you do for fun?")
+        sst.leisure = (
+            st.radio(
+                "Choose one of the following",
+                options=["Watch movies", "Read books"],
+            )
+            .lower()
+            .replace(" ", "_")
         )
 
-        prompt = st.text_input(label="You: ", key=turns)
-        st.write(f"You: {prompt}")
-        time.sleep(0.58)
-
-        # if st.button(label="End Conversation", on_click=True, key=turns*12345):
-        #     break
-
-    if prompt != "":
-        correction = correct(messages)
-        st.write(f"Bot: Here is my advice for you.\n{correction}")
-
-
-def correct(messages):
-    correction_request = {
-        "role": "assistant",
-        "content": "Could you give me feedback about my English in Korean?",
-    }
-    messages.append(correction_request)
-    response = input_prmpt(messages)
-    return response
-
-
-# Run the chatbot with a specific model
-chat()
+        submitted = st.form_submit_button("Start Test")
+        if submitted:
+            sst.db = init_database(user_id="admin", theme=sst.leisure, n_questions=3)
+            sst.questions = [None] + sst.db.get_interview_questions(sst.leisure)[: sst.db.n_questions]
+            sst.answers = [{} for _ in range(4)]
+            sst.current_idx = 1
+            st.experimental_rerun()
+else:
+    if sst.current_idx > sst.db.n_questions: # To-do : n_themes * n_questions:
+        feedback_template(page_idx=sst.current_idx)
+    else:
+        qa_template(page_idx=sst.current_idx)
