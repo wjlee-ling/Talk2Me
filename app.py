@@ -27,7 +27,6 @@ if "db" not in sst:
 
         submitted = st.form_submit_button("Start Test")
         if submitted and len(sst.username) > 0:
-            print(sst.username)
             sst.db = init_database(user_id=sst.username, theme=sst.leisure, n_questions=3)
             sst.questions = [None] + sst.db.get_interview_questions(sst.leisure)[: sst.db.n_questions]
             sst.answers = [{} for _ in range(4)]
