@@ -1,9 +1,8 @@
 import openai
 import streamlit as st
 from util.utils import *
-from util.templates import qa_template
+from util.templates import qa_template, feedback_template
 from util.query_database import init_database
-from util.chat import get_feedback
 
 
 def update_idx(idx):
@@ -34,4 +33,7 @@ if "db" not in st.session_state:
             st.session_state.current_idx = 1
             st.experimental_rerun()
 else:
-    doc = qa_template(page_idx=st.session_state.current_idx)
+    if st.session_state.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions:
+        feedback_template()
+    else:
+        qa_template(page_idx=st.session_state.current_idx)
