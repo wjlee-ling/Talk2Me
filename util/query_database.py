@@ -19,28 +19,33 @@ class Database:
         self.theme = self.theme.replace(" ", "_")
 
     def get_current_time(self):
-        return datetime.now().strftime("%Y%m%d%H%M")
+        return datetime.now().strftime("%Y%m%d%H%M%S")
 
     @st.cache_data
     def insert_one(self, collection, insertion: dict):
+        print("DB: new insertion")
         assert collection in self.db.list_collection_names()
         insertion["theme"] = self.theme
         insertion["user_id"] = self.user_id
-        # insertion["time"] = self.get_current_time()
+        insertion["submit_time"] = self.get_current_time()
         insertion["collection"] = collection
         insertion["session_time"] = self.session_time
         post_id = self.db[collection].insert_one(insertion).inserted_id
 
         return post_id
 
-    def find_one(self, collection, hint: dict):
+    def find_latest(self, collection, hint: dict):
         assert collection in self.db.list_collection_names()
         hint["user_id"] = self.user_id
         hint["theme"] = self.theme
         hint["collection"] = collection
         hint["session_time"] = self.session_time
 
-        return self.db[collection].find_one(hint)
+        latest = self.db[collection].find(hint).sort("submit_time",-1).limit(1)
+        try:
+            return latest[0]
+        except IndexError:
+            return None
 
     def update_document(self, collection, file_path):
         """
@@ -76,7 +81,7 @@ class Database:
 
 @st.cache_resource
 def init_database(user_id, theme, n_questions, session_time=None):
-    print("database connected")
+    print("DB: connected")
     if session_time is None:
         session_time = datetime.now().strftime("%Y%m%d%H%M%S")
     return Database(

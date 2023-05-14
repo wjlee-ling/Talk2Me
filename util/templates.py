@@ -6,83 +6,97 @@ from datetime import datetime
 from streamlit import session_state as sst
 
 
+def record(page_idx, wav_bytes):
+    question_item = sst.questions[page_idx]
+    question_content = question_item["question"]
+    question_type = question_item["type"]
+    audio_file_name = f"{sst.db.user_id}_Q{page_idx}.wav"
+
+    sst["answers"][page_idx]["wav"] = wav_bytes
+    path = Path(audio_file_name)
+    if path.exists():
+        path.unlink()
+    with open(audio_file_name, mode="bx") as f:
+        f.write(wav_bytes)
+    audio = open(audio_file_name, "rb")
+    sst["answers"][page_idx]["transcript"] = get_transcript(audio)
+
+    st.session_state.db.insert_one(
+        collection="interviews",
+        insertion={
+            "question": question_content,
+            "type": question_type,
+            "answer": sst["answers"][page_idx]["transcript"],
+            "feedback": "",
+        },
+    )
+    st.experimental_rerun()
+
+
 def qa_template(page_idx):
     question_item = sst.questions[page_idx]
     question_content = question_item["question"]
     question_type = question_item["type"]
     audio_file_name = f"{sst.db.user_id}_Q{page_idx}.wav"
 
-    st.subheader(question_content)
-    print("======================")
-    print(page_idx)
+    def _record(page_idx, wav_bytes):
+        sst["answers"][page_idx]["wav"] = wav_bytes
+        path = Path(audio_file_name)
+        if path.exists():
+            path.unlink()
+        with open(audio_file_name, mode="bx") as f:
+            f.write(wav_bytes)
+        audio = open(audio_file_name, "rb")
+        sst["answers"][page_idx]["transcript"] = get_transcript(audio)
 
-    doc = st.session_state.db.find_one(
+        st.session_state.db.insert_one(
+            collection="interviews",
+            insertion={
+                "question": question_content,
+                "type": question_type,
+                "answer": sst["answers"][page_idx]["transcript"],
+                "feedback": "",
+            },
+        )
+        st.experimental_rerun()
+
+    st.subheader(question_content)
+    doc = st.session_state.db.find_latest(
         collection="interviews",
         hint={
             "question": question_content,
             "type": question_type,
         },
     )
-    print(doc)
-
     wav_bytes = get_mic_input()
     if wav_bytes and doc is None:
-        print("111111111")
-        sst["answers"][page_idx]["wav"] = wav_bytes
-        path = Path(audio_file_name)
-        if path.exists():
-            path.unlink()
-        with open(audio_file_name, mode="bx") as f:
-            f.write(wav_bytes)
-        audio = open(audio_file_name, "rb")
-        sst["answers"][page_idx]["transcript"] = get_transcript(audio)
+        _record(page_idx, wav_bytes)
+        # sst["answers"][page_idx]["wav"] = wav_bytes
+        # path = Path(audio_file_name)
+        # if path.exists():
+        #     path.unlink()
+        # with open(audio_file_name, mode="bx") as f:
+        #     f.write(wav_bytes)
+        # audio = open(audio_file_name, "rb")
+        # sst["answers"][page_idx]["transcript"] = get_transcript(audio)
 
-        st.session_state.db.insert_one(
-            collection="interviews",
-            insertion={
-                "question": question_content,
-                "type": question_type,
-                "answer": sst["answers"][page_idx]["transcript"],
-                "feedback": "",
-            },
-        )
-        st.experimental_rerun()
+        # st.session_state.db.insert_one(
+        #     collection="interviews",
+        #     insertion={
+        #         "question": question_content,
+        #         "type": question_type,
+        #         "answer": sst["answers"][page_idx]["transcript"],
+        #         "feedback": "",
+        #     },
+        # )
+        # st.experimental_rerun()
 
     elif doc is not None and wav_bytes and wav_bytes != sst["answers"][page_idx]["wav"]:
         # re-recording
-        print("222222222222")
-        sst["answers"][page_idx]["wav"] = wav_bytes
-        path = Path(audio_file_name)
-        if path.exists():
-            path.unlink()
-        with open(audio_file_name, mode="bx") as f:
-            f.write(wav_bytes)
-        audio = open(audio_file_name, "rb")
-        sst["answers"][page_idx]["transcript"] = get_transcript(audio)
-
-        st.session_state.db.insert_one(
-            collection="interviews",
-            insertion={
-                "question": question_content,
-                "type": question_type,
-                "answer": sst["answers"][page_idx]["transcript"],
-                "feedback": "",
-            },
-        )
-        st.experimental_rerun()
+        _record(page_idx, wav_bytes)
 
     elif doc is not None:
-        print("33333333333")
         st.write(doc["answer"])
         if st.button("Next", key=f"next_button_{sst.current_idx}"):
             sst.current_idx = 2
             st.experimental_rerun()
-
-
-    # doc = st.session_state.db.find_one(
-    #     collection="interviews",
-    #     hint={
-    #         "question": question_content,
-    #         "type": question_type,
-    #     },
-    # )
