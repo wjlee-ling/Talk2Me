@@ -108,7 +108,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path")
     parser.add_argument("-c", "--collection", default="questions")
+    parser.add_argument("-t", "--theme")
+
     args = parser.parse_args()
 
-    database = Database(user_id="admin", theme="test")
+    database = Database(user_id="admin", theme=args.theme, n_questions=1, session_time="")
     database.update_document(collection=args.collection, file_path=args.path)
