@@ -95,14 +95,14 @@ def feedback_template(page_idx):
     feedback = "\n".join(feedback_ls)
     st.write(feedback)
     if sst.user_feedback == "first_run":
-        time.sleep(10.0)
+        time.sleep(5.5)
         sst.user_feedback = "not_yet"
         st.experimental_rerun()
     elif sst.user_feedback == "sent":
         st.download_button(label="Download the feedback", data=feedback)  # file_name=f"Talk2Ava_{sst.username}.txt"
         if st.button(label="Talk 2 Ava **again**!"):
             sst.db.client.close()
-            st.cache_resource.clear()
+            del sst["db"]
             st.experimental_rerun()
 
 
@@ -116,10 +116,10 @@ def user_feedback_template(page_idx):
     )
     st.write("You've selected", satisfaction, f"({satisfaction_mapping[satisfaction]})")
 
-    user_comment = st.text_input(label=f"Why {satisfaction}?", value="답변이 보다...")
-    if user_comment == "답변이 보다..." or len(user_comment) < 5:
+    user_comment = st.text_input(label=f"Why {satisfaction}?", value="...")
+    if user_comment == "..." or len(user_comment) < 5:
         st.warning("Want to hear more from you!")
 
-    elif satisfaction and user_comment:
+    elif satisfaction and user_comment and st.button("Send"):
         sst.user_feedback = "sent"
         st.experimental_rerun()

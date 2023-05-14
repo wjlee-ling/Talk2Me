@@ -10,6 +10,9 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("Talk2Ava")
 if "db" not in sst:
+    if "current_idx" in sst and sst.current_idx > 0:
+        st.cache_resource.clear()
+        
     with st.form("setting"):
         st.header("Background Survey")
         st.subheader("Who are you?")
