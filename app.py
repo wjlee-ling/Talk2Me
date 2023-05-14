@@ -12,6 +12,9 @@ st.title("Talk2Ava")
 if "db" not in sst:
     with st.form("setting"):
         st.header("Background Survey")
+        st.subheader("Who are you?")
+        sst.user_id = st.text_input(label="name")
+
         st.subheader("What do you do for fun?")
         sst.leisure = (
             st.radio(
