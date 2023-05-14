@@ -14,8 +14,8 @@ class Database:
     session_time: str
 
     def __post_init__(self):
-        client = MongoClient(st.secrets["mongo_uri"])
-        self.db = client.get_database("opic")
+        self.client = MongoClient(st.secrets["mongo_uri"])
+        self.db = self.client.get_database("opic")
         self.theme = self.theme.replace(" ", "_")
 
     def get_current_time(self):

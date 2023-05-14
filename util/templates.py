@@ -100,9 +100,10 @@ def feedback_template(page_idx):
         st.experimental_rerun()
     elif sst.user_feedback == "sent":
         st.download_button(label="Download the feedback", data=feedback)  # file_name=f"Talk2Ava_{sst.username}.txt"
-
-
-    st.divider()
+        if st.button(label="Talk 2 Ava **again**!"):
+            sst.db.client.close()
+            st.cache_resource.clear()
+            st.experimental_rerun()
 
 
 def user_feedback_template(page_idx):

@@ -35,7 +35,6 @@ if "db" not in sst:
             st.experimental_rerun()
 else:
     if sst.current_idx > sst.db.n_questions: # To-do : n_themes * n_questions:
-        print(sst.user_feedback)
         if sst.user_feedback == "first_run":
             feedback_template(page_idx=sst.current_idx)
         elif sst.user_feedback == "not_yet":
