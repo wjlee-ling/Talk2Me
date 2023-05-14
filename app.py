@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 from util.utils import *
-from util.templates import qa_template, feedback_template
+from util.templates import qa_template, feedback_template, user_feedback_template
 from util.query_database import init_database
 from streamlit import session_state as sst
 
@@ -31,9 +31,17 @@ if "db" not in sst:
             sst.questions = [None] + sst.db.get_interview_questions(sst.leisure)[: sst.db.n_questions]
             sst.answers = [{} for _ in range(4)]
             sst.current_idx = 1
+            sst.user_feedback = "first_run"
             st.experimental_rerun()
 else:
     if sst.current_idx > sst.db.n_questions: # To-do : n_themes * n_questions:
-        feedback_template(page_idx=sst.current_idx)
+        print(sst.user_feedback)
+        if sst.user_feedback == "first_run":
+            feedback_template(page_idx=sst.current_idx)
+        elif sst.user_feedback == "not_yet":
+            user_feedback_template(page_idx=sst.current_idx)
+        elif sst.user_feedback == "sent":
+            feedback_template(page_idx=sst.current_idx)
+            
     else:
         qa_template(page_idx=sst.current_idx)
