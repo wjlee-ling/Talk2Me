@@ -37,21 +37,25 @@ if "survey" not in st.session_state:
 elif st.session_state.survey:
     st.session_state.db = init_database(user_id="admin", theme=st.session_state.leisure, n_questions=3)
 
-    if "questions" not in st.session_state:
+    if "current_idx" not in st.session_state:
         st.session_state.questions = [None] +st.session_state.db.get_interview_questions(st.session_state.leisure)[:st.session_state.db.n_questions]
         st.session_state.answers = [{} for _ in range(4)]
         st.session_state.current_idx = 0
+        st.experimental_rerun()
         #st.session_state.transcripts = [] * 3
 
-    elif "questions" in st.session_state:
+    else:
         if st.session_state.current_idx > 0:
             doc = qa_template(st.session_state.current_idx)
 
-        if st.button(label="Q1  ▽", on_click=update_idx, kwargs={"idx":1}, use_container_width=True):
-            st.session_state.current_idx = 1  
+        if st.button(label="Q1  ▽", use_container_width=True, key="bttn1", on_click=update_idx, args=[1]):
+            st.empty()
+            # st.session_state.current_idx = 1  
+            # doc = qa_template(st.session_state.current_idx)
         
-        if st.button(label="Q1  ▽", on_click=update_idx, kwargs={"idx":1}, use_container_width=True):
+        if st.button(label="Q2  ▽", use_container_width=True, key="bttn2"):
             st.session_state.current_idx = 2
+            # doc = qa_template(st.session_state.current_idx)
 
             # if st.session_state.answers[1] != {}:
             #     st.write(st.session_state.answers[1]["transcript"])

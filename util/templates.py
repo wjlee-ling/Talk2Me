@@ -22,6 +22,15 @@ def qa_template(page_idx):
     wav_bytes = get_mic_input()
     print("======================")
     print(st.session_state.current_idx)
+
+    doc = st.session_state.db.find_one(
+        collection="interviews",
+        hint={
+            "question": question_content,
+            "type": question_type,
+        },
+    )
+
     if wav_bytes:
         sst["answers"][page_idx]["wav"] = wav_bytes
         path = Path(audio_file_name)
@@ -42,14 +51,9 @@ def qa_template(page_idx):
             },
         )
 
-    doc = st.session_state.db.find_one(
-        collection="interviews",
-        hint={
-            "question": question_content,
-            "type": question_type,
-        },
-    )
-    if doc and "answer" in doc:
+        return qa_template(sst.current_idx)
+
+    else:
         st.write(doc["answer"])
 
     # if doc and "answer" in doc:
