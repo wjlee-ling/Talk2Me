@@ -6,7 +6,7 @@ import streamlit as st
 from util.utils import *
 
 
-engine = st.secrets.GPT_MODEL
+engine = st.secrets["GPT_MODEL"]
 
 
 def get_response(messages):
