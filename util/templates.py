@@ -1,16 +1,11 @@
 from util.chat import get_feedback
 from util.utils import *
 from util.speech_to_text import get_mic_input, get_transcript
-
-
 import streamlit as st
 from datetime import datetime
 from streamlit import session_state as sst
-from streamlit_extras.switch_page_button import switch_page
-from st_pages import hide_pages
 
 
-# @st.cache_resource(experimental_allow_widgets=True)
 def qa_template(page_idx):
     question_item = sst.questions[page_idx]
     question_content = question_item["question"]
@@ -49,7 +44,7 @@ def qa_template(page_idx):
             "question": question_content,
             "type": question_type,
         },
-    )    
+    )
 
     if doc is not None:
         st.write(doc["answer"])
