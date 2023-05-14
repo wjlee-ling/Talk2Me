@@ -11,7 +11,7 @@ def update_idx(idx):
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-st.title("Talk")
+st.title("Talk2Ava")
 if "db" not in sst:
     with st.form("setting"):
         st.header("Background Survey")
