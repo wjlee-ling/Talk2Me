@@ -33,6 +33,13 @@ def qa_template(page_idx: int):
             },
         )
         st.experimental_rerun()
+    
+    @st.cache_data
+    def _update_feedback(page_idx: int, doc: dict):
+        feedback = get_feedback(doc)
+        sst.db.update_feedback(item_id=doc["_id"], feedback=feedback)
+        sst["answers"][page_idx]["id"] = doc["_id"]
+        sst["answers"][page_idx]["feedback"] = feedback
 
     st.subheader(question_content)
     doc = sst.db.find_latest(
@@ -54,11 +61,17 @@ def qa_template(page_idx: int):
     elif doc is not None:
         # display user answer
         st.write(doc["answer"])
+        
         if st.button("Next", key=f"next_button_{sst.current_idx}"):
+            _update_feedback(page_idx, doc)
+
             if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions
                 # redirect to feedback page
-                feedback_template(doc)
+                feedback_template()
 
             else:
                 sst.current_idx += 1
                 st.experimental_rerun()
+
+def feedback_template():
+    pass

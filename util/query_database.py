@@ -73,9 +73,11 @@ class Database:
                 items.append(result["items"])
         return items
 
-    def update_feedback(self, question, feedback):
+    @st.cache_data
+    def update_feedback(self, item_id, feedback):
+        print("DB: add feedback")
         self.db["interviews"].update_one(
-            filter={"user_id": self.user_id, "theme": self.theme, "question": question},
+            filter={"_id": item_id},
             update={"$set": {"feedback": feedback}},
         )
 
