@@ -13,12 +13,21 @@ def qa_template(page_idx):
     audio_file_name = f"{sst.db.user_id}_Q{page_idx}.wav"
 
     st.subheader(question_content)
-
-    wav_bytes = get_mic_input()
     print("======================")
     print(page_idx)
 
-    if wav_bytes:
+    doc = st.session_state.db.find_one(
+        collection="interviews",
+        hint={
+            "question": question_content,
+            "type": question_type,
+        },
+    )
+    print(doc)
+
+    wav_bytes = get_mic_input()
+    if wav_bytes and doc is None:
+        print("111111111")
         sst["answers"][page_idx]["wav"] = wav_bytes
         path = Path(audio_file_name)
         if path.exists():
@@ -37,17 +46,43 @@ def qa_template(page_idx):
                 "feedback": "",
             },
         )
+        st.experimental_rerun()
 
-    doc = st.session_state.db.find_one(
-        collection="interviews",
-        hint={
-            "question": question_content,
-            "type": question_type,
-        },
-    )
+    elif doc is not None and wav_bytes and wav_bytes != sst["answers"][page_idx]["wav"]:
+        # re-recording
+        print("222222222222")
+        sst["answers"][page_idx]["wav"] = wav_bytes
+        path = Path(audio_file_name)
+        if path.exists():
+            path.unlink()
+        with open(audio_file_name, mode="bx") as f:
+            f.write(wav_bytes)
+        audio = open(audio_file_name, "rb")
+        sst["answers"][page_idx]["transcript"] = get_transcript(audio)
 
-    if doc is not None:
+        st.session_state.db.insert_one(
+            collection="interviews",
+            insertion={
+                "question": question_content,
+                "type": question_type,
+                "answer": sst["answers"][page_idx]["transcript"],
+                "feedback": "",
+            },
+        )
+        st.experimental_rerun()
+
+    elif doc is not None:
+        print("33333333333")
         st.write(doc["answer"])
         if st.button("Next", key=f"next_button_{sst.current_idx}"):
             sst.current_idx = 2
             st.experimental_rerun()
+
+
+    # doc = st.session_state.db.find_one(
+    #     collection="interviews",
+    #     hint={
+    #         "question": question_content,
+    #         "type": question_type,
+    #     },
+    # )
