@@ -33,8 +33,5 @@ def get_mic_input():
 
 
 def get_transcript(audio_file):
-    # with open(f"{filename}.wav", mode="bx") as f:
-    #     f.write(raw_file)
-    # audio_file= open(f"{filename}.wav", "rb")
     transcript = openai.Audio.transcribe("whisper-1", audio_file)["text"]
     return transcript

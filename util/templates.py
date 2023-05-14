@@ -6,33 +6,6 @@ from datetime import datetime
 from streamlit import session_state as sst
 
 
-def record(page_idx, wav_bytes):
-    question_item = sst.questions[page_idx]
-    question_content = question_item["question"]
-    question_type = question_item["type"]
-    audio_file_name = f"{sst.db.user_id}_Q{page_idx}.wav"
-
-    sst["answers"][page_idx]["wav"] = wav_bytes
-    path = Path(audio_file_name)
-    if path.exists():
-        path.unlink()
-    with open(audio_file_name, mode="bx") as f:
-        f.write(wav_bytes)
-    audio = open(audio_file_name, "rb")
-    sst["answers"][page_idx]["transcript"] = get_transcript(audio)
-
-    st.session_state.db.insert_one(
-        collection="interviews",
-        insertion={
-            "question": question_content,
-            "type": question_type,
-            "answer": sst["answers"][page_idx]["transcript"],
-            "feedback": "",
-        },
-    )
-    st.experimental_rerun()
-
-
 def qa_template(page_idx):
     question_item = sst.questions[page_idx]
     question_content = question_item["question"]
@@ -71,25 +44,6 @@ def qa_template(page_idx):
     wav_bytes = get_mic_input()
     if wav_bytes and doc is None:
         _record(page_idx, wav_bytes)
-        # sst["answers"][page_idx]["wav"] = wav_bytes
-        # path = Path(audio_file_name)
-        # if path.exists():
-        #     path.unlink()
-        # with open(audio_file_name, mode="bx") as f:
-        #     f.write(wav_bytes)
-        # audio = open(audio_file_name, "rb")
-        # sst["answers"][page_idx]["transcript"] = get_transcript(audio)
-
-        # st.session_state.db.insert_one(
-        #     collection="interviews",
-        #     insertion={
-        #         "question": question_content,
-        #         "type": question_type,
-        #         "answer": sst["answers"][page_idx]["transcript"],
-        #         "feedback": "",
-        #     },
-        # )
-        # st.experimental_rerun()
 
     elif doc is not None and wav_bytes and wav_bytes != sst["answers"][page_idx]["wav"]:
         # re-recording
