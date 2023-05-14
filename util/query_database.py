@@ -21,11 +21,12 @@ class Database:
     def get_current_time(self):
         return datetime.now().strftime("%Y%m%d%H%M")
 
+    @st.cache_data
     def insert_one(self, collection, insertion: dict):
         assert collection in self.db.list_collection_names()
         insertion["theme"] = self.theme
         insertion["user_id"] = self.user_id
-        insertion["time"] = self.get_current_time()
+        # insertion["time"] = self.get_current_time()
         insertion["collection"] = collection
         insertion["session_time"] = self.session_time
         post_id = self.db[collection].insert_one(insertion).inserted_id
@@ -75,6 +76,7 @@ class Database:
 
 @st.cache_resource
 def init_database(user_id, theme, n_questions, session_time=None):
+    print("database connected")
     if session_time is None:
         session_time = datetime.now().strftime("%Y%m%d%H%M%S")
     return Database(

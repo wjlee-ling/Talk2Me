@@ -8,7 +8,10 @@ from util.templates import qa_template
 from util.query_database import init_database
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
+from util.chat import get_feedback
 
+def update_idx(idx):
+    st.session_state.current_idx = idx
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 hide_pages(["Question1", "Question2", "Question3"])
@@ -40,16 +43,37 @@ elif st.session_state.survey:
         st.session_state.current_idx = 0
         #st.session_state.transcripts = [] * 3
 
-    if "questions" in st.session_state:
-        with st.expander(label="Q1"):
-            st.session_state.current_idx = 1
-            qa_template(page_idx=1)
+    elif "questions" in st.session_state:
+        if st.session_state.current_idx > 0:
+            doc = qa_template(st.session_state.current_idx)
 
-        with st.expander(label="Q2"):
+        if st.button(label="Q1  ▽", on_click=update_idx, kwargs={"idx":1}, use_container_width=True):
+            st.session_state.current_idx = 1  
+        
+        if st.button(label="Q1  ▽", on_click=update_idx, kwargs={"idx":1}, use_container_width=True):
             st.session_state.current_idx = 2
-            qa_template(page_idx=2)
+
+            # if st.session_state.answers[1] != {}:
+            #     st.write(st.session_state.answers[1]["transcript"])
+                # if "feedback" in st.session_state.answers[1]:
+                #     st.write(st.session_state.answers[1]["feedback"])
+                # else: 
+                    # if st.button("Get Feedback", key=f"feedback_button_{1}"):
+                    #     feedback = get_feedback(doc)
+                    #     st.session_state.db.update_feedback(question=doc["question"], feedback=feedback)
+
+            #     st.write("inside")
+                    # else:
+                    #     st.subheader("Feedback")
+                    #     st.write(doc["feedback"])
+                        #st.write(doc["answer"])
+
+        # with st.expander(label="Q2", expanded=(st.session_state.current_idx==2)):
+        #     st.session_state.current_idx = 2
+        #     qa_template(page_idx=2)
         
         # recording_template(0)
         # st.session_state.current_idx = 2
         # recording_template(2)
         # question_template(page_idx=1)
+

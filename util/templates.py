@@ -2,41 +2,45 @@ from util.chat import get_feedback
 from util.utils import *
 from util.speech_to_text import get_mic_input, get_transcript
 
+
 import streamlit as st
 from datetime import datetime
+from streamlit import session_state as sst
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import hide_pages
 
 
-def question_template(page_idx):
-    hide_idx = ["Question" + str(idx) for idx in range(page_idx + 1, st.session_state.db.n_questions + 1)]
-    hide_pages(hide_idx)
-    question_item = st.session_state.questions[page_idx]
+# @st.cache_resource(experimental_allow_widgets=True)
+def qa_template(page_idx):
+    question_item = sst.questions[page_idx]
     question_content = question_item["question"]
     question_type = question_item["type"]
+    audio_file_name = f"{sst.db.user_id}_Q{page_idx}.wav"
 
-    st.subheader(f"Q{page_idx}. {question_content}")
+    st.subheader(question_content)
 
     wav_bytes = get_mic_input()
+    print("======================")
+    print(st.session_state.current_idx)
     if wav_bytes:
-        path = Path(f"q{page_idx}.wav")
+        sst["answers"][page_idx]["wav"] = wav_bytes
+        path = Path(audio_file_name)
         if path.exists():
             path.unlink()
-        with open(f"q{page_idx}.wav", mode="bx") as f:
+        with open(audio_file_name, mode="bx") as f:
             f.write(wav_bytes)
-        audio = open(f"q{page_idx}.wav", "rb")
-        transcript = get_transcript(audio)
-        
+        audio = open(audio_file_name, "rb")
+        sst["answers"][page_idx]["transcript"] = get_transcript(audio)
+
         st.session_state.db.insert_one(
             collection="interviews",
             insertion={
                 "question": question_content,
                 "type": question_type,
-                "answer": transcript,
+                "answer": sst["answers"][page_idx]["transcript"],
                 "feedback": "",
             },
         )
-        del wav_bytes
 
     doc = st.session_state.db.find_one(
         collection="interviews",
@@ -45,17 +49,17 @@ def question_template(page_idx):
             "type": question_type,
         },
     )
-
     if doc and "answer" in doc:
         st.write(doc["answer"])
 
-        if doc["feedback"] == "":
-            feedback = get_feedback(doc)
-            st.session_state.db.update_feedback(question=doc["question"], feedback=feedback)
-        else:
-            st.subheader("Feedback")
-            st.write(doc["feedback"])
+    # if doc and "answer" in doc:
 
-        if page_idx != st.session_state.db.n_questions:
-            if st.button("next"):
-                switch_page(f"Question{page_idx+1}")
+    #     if st.button("Get Feedback", key=f"feedback_button_{sst.current_idx}"):
+    #         if doc["feedback"] == "":
+    #             feedback = get_feedback(doc)
+    #             st.write(feedback)
+    #             sst.db.update_feedback(question=doc["question"], feedback=feedback)
+    #         else:
+    #             st.subheader("Feedback")
+    #             st.write(doc["feedback"])
+
