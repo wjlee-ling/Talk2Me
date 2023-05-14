@@ -3,20 +3,20 @@ import streamlit as st
 from util.utils import *
 from util.templates import qa_template, feedback_template
 from util.query_database import init_database
-
+from streamlit import session_state as sst
 
 def update_idx(idx):
-    st.session_state.current_idx = idx
+    sst.current_idx = idx
 
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.title("Talk")
-if "db" not in st.session_state:
+if "db" not in sst:
     with st.form("setting"):
         st.header("Background Survey")
         st.subheader("What do you do for fun?")
-        st.session_state.leisure = (
+        sst.leisure = (
             st.radio(
                 "Choose one of the following",
                 options=["Watch movies", "Read books"],
@@ -27,13 +27,13 @@ if "db" not in st.session_state:
 
         submitted = st.form_submit_button("Start Test")
         if submitted:
-            st.session_state.db = init_database(user_id="admin", theme=st.session_state.leisure, n_questions=3)
-            st.session_state.questions = [None] + st.session_state.db.get_interview_questions(st.session_state.leisure)[: st.session_state.db.n_questions]
-            st.session_state.answers = [{} for _ in range(4)]
-            st.session_state.current_idx = 1
+            sst.db = init_database(user_id="admin", theme=sst.leisure, n_questions=3)
+            sst.questions = [None] + sst.db.get_interview_questions(sst.leisure)[: sst.db.n_questions]
+            sst.answers = [{} for _ in range(4)]
+            sst.current_idx = 1
             st.experimental_rerun()
 else:
-    if st.session_state.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions:
+    if sst.current_idx == sst.db.n_questions: # To-do : n_themes * n_questions:
         feedback_template()
     else:
-        qa_template(page_idx=st.session_state.current_idx)
+        qa_template(page_idx=sst.current_idx)
