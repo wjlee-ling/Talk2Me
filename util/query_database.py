@@ -14,8 +14,8 @@ class Database:
     session_time: str
 
     def __post_init__(self):
-        client = MongoClient(st.secrets["mongo_uri"])
-        self.db = client.get_database("opic")
+        self.client = MongoClient(st.secrets["mongo_uri"])
+        self.db = self.client.get_database("opic")
         self.theme = self.theme.replace(" ", "_")
 
     def get_current_time(self):
@@ -80,6 +80,18 @@ class Database:
             filter={"_id": _item_id, "question": question},
             update={"$set": {"feedback": feedback}},
         )
+    
+    @st.cache_data
+    def insert_user_feedback(self, _item_ids, satisfaction, comment):
+        print("DB: add user feedback")
+        user_feedback = {
+            "user_id":self.user_id,
+            "session_time":self.session_time,
+            "ids":_item_ids,
+            "satisfaction":satisfaction,
+            "comment":comment,
+        }
+        self.db["user_feedback"].insert_one(user_feedback)
 
 
 @st.cache_resource
@@ -96,7 +108,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path")
     parser.add_argument("-c", "--collection", default="questions")
+    parser.add_argument("-t", "--theme")
+
     args = parser.parse_args()
 
-    database = Database(user_id="admin", theme="test")
+    database = Database(user_id="admin", theme=args.theme, n_questions=1, session_time="")
     database.update_document(collection=args.collection, file_path=args.path)
