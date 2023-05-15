@@ -16,8 +16,9 @@ if "db" not in sst:
     with st.form("setting"):
         st.header("Background Survey")
         st.subheader("Who are you?")
-        st.text_input(label="Let me know your English name.", value="test_user", key="username")
-
+        st.text_input(label="Let me know your English nickname.", value="", key="username")
+        if len(sst.username) == 0:
+            st.warning("닉네임을 입력해 주세요!")
         st.subheader("What do you do for fun?")
         sst.leisure = (
             st.radio(

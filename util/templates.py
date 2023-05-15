@@ -50,6 +50,7 @@ def qa_template(page_idx: int):
         },
     )
     wav_bytes = get_mic_input()
+    st.info("Start Recording과 Stop으로 답변 녹음을 시작하고 마친 후 조금만 기다리시면 음성인식 결과가 이곳에 나타납니다. 답변을 다시 제출하시려면 Reset을 누르고 다시 녹음해주세요. 모바일 환경에서는 응답이 느릴 수 있습니다.")
     if wav_bytes and doc is None:
         # first recording
         _record(page_idx, wav_bytes)
@@ -106,7 +107,7 @@ def feedback_template(page_idx):
 
 def user_feedback_template(page_idx):
     satisfaction_mapping = {"😍": "I'd looove to Talk2Ava!", "🤔": "I'm not sure.", "🙁": "Meh... Could be a lot better."}
-    st.info("Wait! If you want to know how Ava thinks about your answers to the other questions, let me know how you like Talk2Ava💁‍♀️!")
+    st.info("잠시만요! Ava의 피드백을 다운로드 받으시고 계속 보시려면 우선 Talk2Ava에 대해 평가해 주세요💁‍♀️!") # Wait! If you want to know how Ava thinks about your answers to the other questions, let me know how you like Talk2Ava
     st.subheader("User Feedback")
     satisfaction = st.selectbox(
         "Satisfaction",
