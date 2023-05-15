@@ -93,7 +93,7 @@ def feedback_template(page_idx):
     feedback = "\n".join(feedback_ls)
     st.write(feedback)
     if sst.user_feedback == "first_run":
-        time.sleep(5.5)
+        time.sleep(12.0)
         sst.user_feedback = "not_yet"
         st.experimental_rerun()
     elif sst.user_feedback == "sent":
